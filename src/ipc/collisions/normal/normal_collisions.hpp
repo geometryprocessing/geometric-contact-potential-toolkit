@@ -60,6 +60,10 @@ public:
         const CollisionMesh& mesh,
         Eigen::ConstRef<Eigen::MatrixXd> vertices) const;
 
+    /// @returns The avg distance between any non-adjacent elements less than dhat.
+    double compute_avg_distance(
+        const CollisionMesh& mesh,  Eigen::ConstRef<Eigen::MatrixXd> vertices, const double dhat) const;
+
     // ------------------------------------------------------------------------
 
     /// @brief Get the number of collisions.

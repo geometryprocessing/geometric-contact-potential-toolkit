@@ -361,6 +361,61 @@ double NormalCollisions::compute_minimum_distance(
 
 // ============================================================================
 
+// NOTE: Actually distance squared
+double NormalCollisions::compute_avg_distance(
+        const CollisionMesh& mesh,
+        Eigen::ConstRef<Eigen::MatrixXd> vertices,
+        const double dhat) const
+{
+    assert(vertices.rows() == mesh.num_vertices());
+    if (empty()) {
+        return std::numeric_limits<double>::infinity();
+    }
+
+    const Eigen::MatrixXi& edges = mesh.edges();
+    const Eigen::MatrixXi& faces = mesh.faces();
+    const double dhat_sq = dhat * dhat;
+
+    // Thread-local storage: pair<sum_of_distances, count_of_distances>
+    tbb::enumerable_thread_specific<std::pair<double, size_t>> storage{ {0.0, 0} };
+
+    tbb::parallel_for(
+        tbb::blocked_range<size_t>(0, size()),
+        [&](const tbb::blocked_range<size_t>& range) {
+            auto& local = storage.local();
+            double& sum = local.first;
+            size_t& count = local.second;
+
+            for (size_t i = range.begin(); i != range.end(); ++i) {
+                const double dist = (*this)[i].compute_distance(
+                    (*this)[i].dof(vertices, edges, faces));
+
+                // only accumulate those within threshold
+                if (dist <= dhat_sq) {
+                    sum   += dist;
+                    count += 1;
+                }
+            }
+        }
+    );
+
+    // Combine sums and counts from all threads
+    const auto total = storage.combine(
+        [](const std::pair<double, size_t>& a, const std::pair<double, size_t>& b) {
+            return std::make_pair(a.first + b.first, a.second + b.second);
+        }
+    );
+
+    const double overall_sum   = total.first;
+    const size_t overall_count = total.second;
+
+    if (overall_count == 0) {
+        return std::numeric_limits<double>::infinity();
+    }
+    return overall_sum / static_cast<double>(overall_count);
+}
+
+// ============================================================================
 size_t NormalCollisions::size() const
 {
     return vv_collisions.size() + ev_collisions.size() + ee_collisions.size()
