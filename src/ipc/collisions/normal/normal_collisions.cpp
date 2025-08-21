@@ -361,6 +361,8 @@ double NormalCollisions::compute_minimum_distance(
 
 // ============================================================================
 
+// ============================================================================
+
 // NOTE: Actually distance squared
 double NormalCollisions::compute_avg_distance(
         const CollisionMesh& mesh,
@@ -416,6 +418,7 @@ double NormalCollisions::compute_avg_distance(
 }
 
 // ============================================================================
+
 size_t NormalCollisions::size() const
 {
     return vv_collisions.size() + ev_collisions.size() + ee_collisions.size()
