@@ -7,7 +7,7 @@
 
 ## Description
 
-GCP toolkit is a set of reusable functions to integrate [Geometric Contact Potential](https://huangzizhou.github.io/research/smooth-contact.html) (GCP) into a simulation, built on top of the [IPC toolkit](https://github.com/ipc-sim/ipc-toolkit).
+GCP toolkit is a set of reusable functions to integrate [Geometric Contact Potential](https://huangzizhou.github.io/research/smooth-contact.html) (GCP) into a simulation, built on top of the [IPC toolkit](https://github.com/ipc-sim/ipc-toolkit). **GCP has been merged into [IPC toolkit](https://github.com/ipc-sim/ipc-toolkit) and this repository is no longer being actively maintained.**
 
 ## Features
 
